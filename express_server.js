@@ -29,7 +29,14 @@ app.get("/urls/new", (req, res) => {
 
 app.post("/urls", (req, res) => {                                     // This post method takes an input via req and sends a response via res.send
   let newShort = generateRandomString();
-  urlDatabase[newShort] = req.body.longURL;                      //get data from longUrl to .post get generaterandomstring value move to the
+  urlDatabase[newShort] = req.body.longURL;
+});
+
+app.post("/urls/:id", (req, res)=> {
+  const { id } = req.params
+  const { longURL } = req.body;
+  urlDatabase[id] = longURL
+  res.redirect(303, "/urls");
 });
 
 app.get("/hello", (req, res) => {
@@ -44,7 +51,6 @@ app.get("/urls/:id", (req, res) => {
   res.render("urls_show", {shortURL: req.params.id, urls: urlDatabase})   // "urls_show" refers to the .ejs (page) file where these paths will render to
 });                                                                       // req.param() takes an address bar input after /urls/<user input ":id"> and renders it
                                                                           // this line will also render the value from the urls urlDatabase when put into the .ejs file
-
 app.post("/urls/:id/delete", (req, res) => {                                //This post will delete a URL resource
   delete urlDatabase[req.params.id]
   res.redirect(303, "/urls");
