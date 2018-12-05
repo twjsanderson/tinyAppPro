@@ -10,10 +10,16 @@
 
 <body>
    <li>
-      <li>Tiny URL converter: <a href="#"></a> </li>
-    <% for (let title in urls) {%>                  <!--- for loop through an object 'urls' found in server file --->
-      <li><%= title %> - <%= urls[title] %></li>    <!--- title is a palceholder that can be key, value, etc --->
+      <li>Tiny URL converter: <a href="#"></a></li>
+      <% for (let title in urls) {%>                                                                      <!--- for loop through an object 'urls' found in server file --->
+      <li><%= title %> - <%= urls[title] %></li> <!--- title is a palceholder that can be key, value, etc --->
     <% } %>
+    <form method="POST" action="/urls/b2xVn2/delete">
+      <button>Delete</button>
+    </form>
+    <form method="POST" action="/urls/9sm5xK/delete">
+      <button>Delete</button>
+    </form>
    </li>
 </body>
 </html>

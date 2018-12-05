@@ -45,6 +45,11 @@ app.get("/urls/:id", (req, res) => {
 });                                                                       // req.param() takes an address bar input after /urls/<user input ":id"> and renders it
                                                                           // this line will also render the value from the urls urlDatabase when put into the .ejs file
 
+app.post("/urls/:id/delete", (req, res) => {                                //This post will delete a URL resource
+  delete urlDatabase[req.params.id]
+  res.redirect(303, "/urls");
+});
+
 app.get("/u/:shortURL", (req, res) => {
   let longURL = req.params.shortURL                                       //this line will take an address input and store the value in shortURL, that is attached to logURL variable
   res.redirect(urlDatabase[longURL]);                                     //once the above is done it will be redirected to the value at urlDatabse[longURl]
