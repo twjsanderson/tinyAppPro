@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>TinyApp</title>
+</head>
+
+<header>
+  <% include partials/_header %>
+</header>
+
+<body>
+   <li>
+      <li>Tiny URL converter: <a href="#"></a> </li>
+    <% for (let title in urls) {%>                  <!--- for loop through an object 'urls' found in server file --->
+      <li><%= title %> - <%= urls[title] %></li>    <!--- title is a palceholder that can be key, value, etc --->
+    <% } %>
+   </li>
+</body>
+</html>
