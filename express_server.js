@@ -1,6 +1,7 @@
 const express = require("express");
 const app = express();
 const bodyParser = require("body-parser");
+const cookieParser = require('cookie-parser')
 var PORT = 8080;
 
 // This declares EJS and tells Express to use EJS as its templating engine
@@ -12,6 +13,10 @@ var urlDatabase = {
   "b2xVn2": "http://www.lighthouselabs.ca",
   "9sm5xK": "http://www.google.com"
 };
+
+app.get(cookieParser('/', (req, res) => {
+  res.cookie('name', 'Tom', { domain: 'google.com'});
+});
 
 app.use(bodyParser.urlencoded({extended: true}));
 
