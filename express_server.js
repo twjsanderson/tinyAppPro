@@ -14,11 +14,20 @@ var urlDatabase = {
   "9sm5xK": "http://www.google.com"
 };
 
-app.get(cookieParser('/', (req, res) => {
-  res.cookie('name', 'Tom', { domain: 'google.com'});
-});
+let templateVars = {
+  "username": "req.cookies['username']"
+
+};
+
+// res.render("urls_index", templateVars);
 
 app.use(bodyParser.urlencoded({extended: true}));
+
+app.post("/login", (req, res) => {
+  console.log(req)
+  res.cookie("username", req.body.username)
+  res.redirect(303, "/urls")
+});
 
 app.get("/", (req, res) => {
   res.send("Hello!");
@@ -73,8 +82,7 @@ app.listen(PORT, () => {
 function generateRandomString() {
   let ranNum = "";
   let possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-
-  for (var i = 0; i < 6; i++)
+  for (var i = 0; i < 7; i++)
     ranNum += possible.charAt(Math.floor(Math.random() * possible.length));
 
   return ranNum;
