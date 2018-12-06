@@ -73,15 +73,32 @@ app.get("/register", (req, res) => {
 });
 
 app.post("/register", (req, res) => {
-  const { id } = generateRandomString();
-  const { email } = req.body.email;
-  const { password } = req.body.password;
-  user[id] = id
-  user.id.email = email
-  user.id.password = password
-  res.cookie("user_id", req.body.id)
-  res.redirect(303, "/urls")
+  const id = generateRandomString()
+  const email = req.body.email
+  const password = req.body.password
 
+  const values = users[id]
+
+  if (!email || !password) {
+    res.statusCode = 400;
+    res.send("You did not enter an email or password!")          //look up statuscode
+  }
+
+  for (let userid in users) {
+    if (users[userid].email === email) {
+      res.statuScode = 400;
+      return res.send("That email already exists!")
+    }
+  }
+
+  users[id] = {
+    id: id,
+    email: email,
+    password: password
+  }
+
+  res.cookie("user_id", id )
+  res.redirect(303, "/urls")
 });
 
 app.post("/logout", (req, res) => {
