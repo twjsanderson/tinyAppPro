@@ -10,12 +10,14 @@
 
 <body>
    <li>
-      <li>Tiny URL Converter<a href="#"></a></li>
+      <li>Tiny URL Converter<a href="#"></a></li><br>
       <% for (let title in urls) {%>
       <a href="/urls/<%= title %>">Edit</a>
       <form method="POST" action="/urls/<%= title %>/delete">
       <button>Delete</button>
-      <li><%= title %> - <%= urls[title] %></li>
+      </form>
+      <form method="POST" action="/urls/<%= title %>/delete">
+      <li><%= title %> - <%= urls[title] %></li><br>
     <% } %>
    </li>
    </form>

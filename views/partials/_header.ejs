@@ -4,9 +4,16 @@
   <title>Header</title>
 </head>
 <body>
+  <% if (username) {%>
+  <h5>User :</h><strong><%= username%></strong>
+<form method = "POST" action="/logout">
+  <input type="submit" value="Logout"><br>
+</form>
+    <%} else {%>
   <form method="POST" action="/login">
-  <input type="text" name="username">
-  <input type="submit" value="submit">
+    <input type="text" name="username">
+    <input type="submit" value="Submit">
   </form>
+  <%}%>
 </body>
 </html>

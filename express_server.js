@@ -6,6 +6,7 @@ var PORT = 8080;
 
 // This declares EJS and tells Express to use EJS as its templating engine
 app.set("view engine", "ejs");
+app.use(cookieParser());
 
 // This keeps track of all url's and their shortened forms
 var urlDatabase = {
@@ -14,17 +15,18 @@ var urlDatabase = {
   "9sm5xK": "http://www.google.com"
 };
 
-let templateVars = {
-  "username": "req.cookies['username']"
+// let templateVars = {
 
-};
+//   username: req.cookies["username"]
+// };
 
-// res.render("urls_index", templateVars);
+// const addUsernameFromCookie = (username, obj) => {
+  // return {username, ...obj }
+// };
 
 app.use(bodyParser.urlencoded({extended: true}));
 
 app.post("/login", (req, res) => {
-  console.log(req)
   res.cookie("username", req.body.username)
   res.redirect(303, "/urls")
 });
@@ -38,10 +40,14 @@ app.get("/urls.json", (req, res) => {
 });
 
 app.get("/urls/new", (req, res) => {
-  res.render("urls_new");
+  res.render("urls_new", {username : req.cookies.username});
 });
 
-app.post("/urls", (req, res) => {                                     // This post method takes an input via req and sends a response via res.send
+app.get("/urls", (req, res) => {
+  res.render("urls_index", {urls: urlDatabase, username : req.cookies.username});
+});
+
+app.post("/urls", (req, res) => {
   let newShort = generateRandomString();
   urlDatabase[newShort] = req.body.longURL;
 });
@@ -53,26 +59,27 @@ app.post("/urls/:id", (req, res)=> {
   res.redirect(303, "/urls");
 });
 
+app.post("/logout", (req, res) =>{
+  res.clearCookie("username")
+  res.redirect("/urls")
+});
+
 app.get("/hello", (req, res) => {
   res.send("<html><body>Hello <b>World</b></body></html>\n");
 });
 
-app.get("/urls", (req, res) => {
-  res.render("urls_index", {urls: urlDatabase})       //"urls_index" refers to the the .ejs file (page) where this will render to the urlDatabase
+app.get("/urls/:id", (req, res) => {
+  res.render("urls_show", {shortURL: req.params.id, urls: urlDatabase, username : req.cookies.username})
 });
 
-app.get("/urls/:id", (req, res) => {
-  res.render("urls_show", {shortURL: req.params.id, urls: urlDatabase})   // "urls_show" refers to the .ejs (page) file where these paths will render to
-});                                                                       // req.param() takes an address bar input after /urls/<user input ":id"> and renders it
-                                                                          // this line will also render the value from the urls urlDatabase when put into the .ejs file
-app.post("/urls/:id/delete", (req, res) => {                                //This post will delete a URL resource
+app.post("/urls/:id/delete", (req, res) => {
   delete urlDatabase[req.params.id]
   res.redirect(303, "/urls");
 });
 
 app.get("/u/:shortURL", (req, res) => {
-  let longURL = req.params.shortURL                                       //this line will take an address input and store the value in shortURL, that is attached to logURL variable
-  res.redirect(urlDatabase[longURL]);                                     //once the above is done it will be redirected to the value at urlDatabse[longURl]
+  let longURL = req.params.shortURL
+  res.redirect(urlDatabase[longURL]);
 });
 
 app.listen(PORT, () => {
