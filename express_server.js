@@ -15,14 +15,23 @@ var urlDatabase = {
   "9sm5xK": "http://www.google.com"
 };
 
-// let templateVars = {
-
-//   username: req.cookies["username"]
-// };
-
-// const addUsernameFromCookie = (username, obj) => {
-  // return {username, ...obj }
-// };
+var users = {
+  "userRandomID": {
+    id: "userRandomID",
+    email: "user@example.com",
+    password: "purple-monkey-dinosaur"
+  },
+ "user2RandomID": {
+    id: "user2RandomID",
+    email: "user2@example.com",
+    password: "dishwasher-funk"
+  },
+  "user3RandomID": {
+    id: "user3RandomID",
+    email: "tom@example.com",
+    password: "k-pop-rules"
+  }
+}
 
 app.use(bodyParser.urlencoded({extended: true}));
 
@@ -59,7 +68,23 @@ app.post("/urls/:id", (req, res)=> {
   res.redirect(303, "/urls");
 });
 
-app.post("/logout", (req, res) =>{
+app.get("/register", (req, res) => {
+  res.render("urls_register");
+});
+
+app.post("/register", (req, res) => {
+  const { id } = generateRandomString();
+  const { email } = req.body.email;
+  const { password } = req.body.password;
+  user[id] = id
+  user.id.email = email
+  user.id.password = password
+  res.cookie("user_id", req.body.id)
+  res.redirect(303, "/urls")
+
+});
+
+app.post("/logout", (req, res) => {
   res.clearCookie("username")
   res.redirect("/urls")
 });
