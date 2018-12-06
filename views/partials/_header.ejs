@@ -4,16 +4,14 @@
   <title>Header</title>
 </head>
 <body>
-  <% if (username) {%>
-  <h5>User :</h><strong><%= username%></strong>
+  <% if (user) {%>
+  <h5>User email:</h><strong><%= user.email%></strong>
 <form method = "POST" action="/logout">
   <input type="submit" value="Logout"><br>
 </form>
     <%} else {%>
-  <form method="POST" action="/login">
-    <input type="text" name="username">
-    <input type="submit" value="Submit">
-  </form>
+  <a href="/register">Register</a>
+  <a href="/login">Login</a>
   <%}%>
 </body>
 </html>
