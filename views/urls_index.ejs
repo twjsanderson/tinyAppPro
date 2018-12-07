@@ -10,8 +10,8 @@
 
 <body>
     <br>
-    <% for (let title in urls) {%>
-    <li><%= title %> - <%= urls[title].longurl %></li><br>
+    <% for (let title in urlsForUser) {%>
+    <li><%= title %> - <%= urlsForUser[title].longurl %></li><br>
 
     <a href="/urls/<%= title %>">Edit</a>
     <form method="POST" action="/urls/<%= title %>/delete"><button>Delete</button></form>

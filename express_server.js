@@ -25,6 +25,11 @@ var urlDatabase = {
     shorturl: "9sm5xK",
     userId: "userRandomID",
     longurl: "http://www.google.com"
+  },
+  "8uwsno": {
+    shorturl: "8uwsno",
+    userId: "twjsanderson",
+    longurl: "http://www.yahoo.ca"
   }
 };
 
@@ -43,6 +48,11 @@ var users = {
     id: "user3RandomID",
     email: "tom@example.com",
     password: "k-pop-rules"
+  },
+  "twjsanderson": {
+    id: "twjsanderson",
+    email: "twjsanderson@yahoo.ca",
+    password: "1234"
   }
 }
 
@@ -61,22 +71,20 @@ app.post("/login", (req, res) => {
   const email = req.body.email
   const password = req.body.password
 
-  for (let emailId in users) {
-    if (users[emailId].id === email) {
-      for (let passid in users) {
-        if (users.id[passid] === password) {
-          //res.cookie("user_id", req.body.users[id])
-          res.redirect("/")
+  for (let Id in users) {
+    if (users[Id].email === email) {
+      if (users[Id].password === password) {
+          res.cookie("user_id", Id)
+          res.redirect("/urls")
         } else {
           res.statuScode = 403;
-          return res.send("That password does not exist!")
+          return res.send("That password is wrong!")
         }
       }
     }
     res.statuScode = 403;
-    return res.send("That email does not exist!")
-  }
-});
+    return res.send("That email doesn't exist!")
+  });
 
 // home page showing HELLO
 app.get("/", (req, res) => {
@@ -101,13 +109,16 @@ app.get("/urls/new", (req, res) => {
 });
 
 app.get("/urls", (req, res) => {
-  let user_id = req.cookies.user_id
-  res.render("urls_index", {urls: urlDatabase, user : users[user_id]});
+   let userId = req.cookies.user_id
+   let urlsForUser = userUrls(userId)
+   res.render("urls_index", {urlsForUser: urlsForUser, user : req.cookies.user_id});
 });
 
-// gets requests to
+// give user id?? is that right for user_id?
 app.post("/urls", (req, res) => {
   let newShort = generateRandomString();
+  let user_id = req.params.id
+  urlDatabase[newShort] = {};
   urlDatabase[newShort].longurl = req.body.longURL
   res.redirect("/urls");
 });
@@ -132,8 +143,6 @@ app.post("/register", (req, res) => {
   const id = generateRandomString()
   const email = req.body.email
   const password = req.body.password
-
-  const values = users[id]
 
   if (!email || !password) {
     res.statusCode = 400;
@@ -168,22 +177,19 @@ app.get("/hello", (req, res) => {
 
 app.get("/urls/:id", (req, res) => {
     let user_id = req.cookies.user_id;
-    console.log("urls edit", user_id, urlDatabase[req.params.id].userId );
-
   if (user_id === urlDatabase[req.params.id].userId) {
       res.render("urls_show", {shortURL: req.params.id, url: urlDatabase[req.params.id].longurl, user : users[user_id]})
   } else {
     res.redirect(301, "/urls");
-
   }
 });
 
 app.post("/urls/:id/delete", (req, res) => {
   const id = req.cookies.user_id
-  if (id === undefined) {
-  res.redirect(303, "/login");
-  } else {
+  if (id === urlDatabase[req.params.id].userId) {
   delete urlDatabase[req.params.id]
+  res.redirect("/urls");
+  } else {
   res.redirect(303, "/urls");
   }
 });
@@ -205,3 +211,13 @@ function generateRandomString() {
 
   return ranNum;
 };
+
+function userUrls(id){
+  let obj = {};
+    for (var key in urlDatabase){
+      if ( id === urlDatabase[key].userId) {
+          obj[key] = urlDatabase[key];
+      }
+    }
+  return obj;
+}
