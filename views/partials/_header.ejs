@@ -5,15 +5,15 @@
 </head>
 <body>
   <h3>Tiny URL Converter</h3><br>
-  <% if (user) {%>
+<% if (user) {%>
   <h5>User email:</h><strong><%= user.email%></strong>
-<form method = "POST" action="/logout">
-  <input type="submit" value="Logout"><br>
-</form>
-    <%} else {%>
+    <form method = "POST" action="/logout">
+    <input type="submit" value="Logout"><br>
+  </form>
+<%} else {%>
   <a href="/register">Register</a>
   <a href="/login">Login</a>
-  <%}%>
+<%}%>
 
 </body>
 </html>

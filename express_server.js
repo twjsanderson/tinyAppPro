@@ -2,6 +2,7 @@ const express = require("express");
 const app = express();
 const bodyParser = require("body-parser");
 const cookieParser = require('cookie-parser')
+const bcrypt = require('bcrypt');
 var PORT = 8080;
 
 // This declares EJS and tells Express to use EJS as its templating engine
@@ -37,22 +38,22 @@ var users = {
   "userRandomID": {
     id: "userRandomID",
     email: "user@example.com",
-    password: "purple-monkey-dinosaur"
+    password: bcrypt.hashSync('simple', 10);
   },
  "user2RandomID": {
     id: "user2RandomID",
     email: "user2@example.com",
-    password: "dishwasher-funk"
+    password: bcrypt.hashSync('easy', 10);
   },
   "user3RandomID": {
     id: "user3RandomID",
     email: "tom@example.com",
-    password: "k-pop-rules"
+    password: bcrypt.hashSync('kpop', 10);
   },
   "twjsanderson": {
     id: "twjsanderson",
     email: "twjsanderson@yahoo.ca",
-    password: "1234"
+    password: bcrypt.hashSync('1234', 10);
   }
 }
 
@@ -70,7 +71,6 @@ app.get("/login", (req, res) => {
 app.post("/login", (req, res) => {
   const email = req.body.email
   const password = req.body.password
-
   for (let Id in users) {
     if (users[Id].email === email) {
       if (users[Id].password === password) {
@@ -101,7 +101,7 @@ app.get("/urls.json", (req, res) => {
 //presents the user with with the form to change/edit the a long url, listens for long url submt
 app.get("/urls/new", (req, res) => {
   let user_id = req.cookies.user_id
-  if (user_id === undefined) {
+  if (user_id === undefined || !user_id) {
     res.redirect("urls_login");
   } else {
     res.render("urls_new",{user : users[user_id]});
@@ -111,8 +111,7 @@ app.get("/urls/new", (req, res) => {
 app.get("/urls", (req, res) => {
    let userId = req.cookies.user_id
    let urlsForUser = userUrls(userId)
-   // loop
-   res.render("urls_index", {urlsForUser: urlsForUser, user : req.cookies.user_id});
+   res.render("urls_index", {urlsForUser: urlsForUser, user : users[userId]});
 });
 
 app.post("/urls", (req, res) => {
@@ -134,7 +133,6 @@ app.post("/urls/:id", (req, res)=> {
   }
 });
 
-
 app.get("/register", (req, res) => {
   res.render("urls_register");
 });
@@ -146,7 +144,7 @@ app.post("/register", (req, res) => {
 
   if (!email || !password) {
     res.statusCode = 400;
-    res.send("You did not enter an email or password!")          //look up statuscode
+    res.send("You did not enter an email or password!")
   }
 
   for (let userid in users) {
@@ -158,8 +156,8 @@ app.post("/register", (req, res) => {
 
   users[id] = {
     id: id,
-    email: email,
-    password: password
+    email: req.body.email,
+    password: bcrypt.hashSync(req.body.password, 10)
   }
 
   res.cookie("user_id", id )
@@ -177,6 +175,7 @@ app.get("/hello", (req, res) => {
 
 app.get("/urls/:id", (req, res) => {
     let user_id = req.cookies.user_id;
+    console.log(user_id);
   if (user_id === urlDatabase[req.params.id].userId) {
       res.render("urls_show", {shortURL: req.params.id, url: urlDatabase[req.params.id].longurl, user : users[user_id]})
   } else {
@@ -187,10 +186,10 @@ app.get("/urls/:id", (req, res) => {
 app.post("/urls/:id/delete", (req, res) => {
   const id = req.cookies.user_id
   if (id === urlDatabase[req.params.id].userId) {
-  delete urlDatabase[req.params.id]
-  res.redirect("/urls");
+    delete urlDatabase[req.params.id]
+    res.redirect("/urls");
   } else {
-  res.redirect(303, "/urls");
+    res.redirect(303, "/urls");
   }
 });
 
