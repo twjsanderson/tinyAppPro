@@ -111,10 +111,10 @@ app.get("/urls/new", (req, res) => {
 app.get("/urls", (req, res) => {
    let userId = req.cookies.user_id
    let urlsForUser = userUrls(userId)
+   // loop
    res.render("urls_index", {urlsForUser: urlsForUser, user : req.cookies.user_id});
 });
 
-// give user id?? is that right for user_id?
 app.post("/urls", (req, res) => {
   let newShort = generateRandomString();
   let user_id = req.params.id
@@ -124,13 +124,13 @@ app.post("/urls", (req, res) => {
 });
 
 app.post("/urls/:id", (req, res)=> {
-  const id = req.cookies.user_id
+  const id = req.params.id
   const longURL = req.body.longURL;
   if (id === undefined) {
-  res.redirect(303, "/urls");
+    res.redirect("/login")
   } else {
-  urlDatabase[id].longurl = longURL
-  res.redirect("/urls/:id",{user : users[user_id]});
+    urlDatabase[id].longurl = longURL;
+    res.redirect("/urls");
   }
 });
 
