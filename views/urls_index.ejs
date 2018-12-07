@@ -9,17 +9,18 @@
 </header>
 
 <body>
-   <li>
-      <li>Tiny URL Converter<a href="#"></a></li><br>
-      <% for (let title in urls) {%>
-      <a href="/urls/<%= title %>">Edit</a>
-      <form method="POST" action="/urls/<%= title %>/delete">
-      <button>Delete</button>
-      </form>
-      <form method="POST" action="/urls/<%= title %>/delete">
-      <li><%= title %> - <%= urls[title] %></li><br>
+    <br>
+    <% for (let title in urls) {%>
+    <li><%= title %> - <%= urls[title] %></li><br>
+
+    <a href="/urls/<%= title %>">Edit</a>
+    <form method="POST" action="/urls/<%= title %>/delete"><button>Delete</button></form>
+    <br>
     <% } %>
-   </li>
-   </form>
+
 </body>
 </html>
+
+
+
+

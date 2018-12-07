@@ -44,19 +44,22 @@ app.post("/login", (req, res) => {
   const email = req.body.email
   const password = req.body.password
 
-  for (let userId in users) {
-    if (users[userId].email === email) {
-      if (users[userId].password === password) {
-        res.cookie("user_id", users[userId].id)
-        res.redirect("/urls")
-      } else {
-        res.statuScode = 403;
-        return res.send("That password does not exist!")
+  for (let emailId in users) {
+    if (users[emailId].id === email) {
+      for (let passid in users) {
+        if (users.id[passid] === password) {
+          //res.cookie("user_id", req.body.users[id])
+          res.redirect("/")
+        } else {
+          res.statuScode = 403;
+          return res.send("That password does not exist!")
+        }
       }
     }
+    res.statuScode = 403;
+    return res.send("That email does not exist!")
   }
-  res.statuScode = 403;
-  return res.send("That email does not exist!")
+
 });
 
 app.get("/", (req, res) => {
@@ -80,6 +83,7 @@ app.get("/urls", (req, res) => {
 app.post("/urls", (req, res) => {
   let newShort = generateRandomString();
   urlDatabase[newShort] = req.body.longURL;
+  res.redirect("/urls");
 });
 
 app.post("/urls/:id", (req, res)=> {
