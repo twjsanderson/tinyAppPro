@@ -10,7 +10,7 @@
 
 <body>
 <!--- This line calls the render method from server.js file and  displays them in a list--->
-<li><%= shortURL %> - <%= urls[shortURL] %></li>
+<li><%= shortURL %> - <%= url %></li>
   <!----the :id refers to when the address has anthying in this spot, its a placeholder ---->
  <form method="POST" action="/urls/<%= shortURL %>">
     <input type="text" name="longURL" placeholder="http://" style="width: 300px">
