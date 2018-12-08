@@ -5,22 +5,18 @@
 </head>
 <body>
   <h3>Tiny URL Converter</h3><br>
-<% if (user) {%>
-  <h5>User email:</h><strong><%= user.email%></strong>
+  <% if (user) {%>
+    <h5>User email:</h><strong><%= user.email%></strong>
     <form method="POST" action="/logout">
       <input type="submit" value="Logout"><br>
     </form>
     <a href="/urls/new" style="font-size: 18px">New</a>
-<%} else {%>
-  <a href="/register">Register</a>
-  <a href="/login">Login</a>
-<%}%>
-
+  <%} else {%>
+    <a href="/register">Register</a>
+    <a href="/login">Login</a>
+  <%}%>
 </body>
 </html>
 
 
 
-<!-- <form method="POST" action="/urls/new">  button asking directing user to create new url - -->
-      <!-- <input type="submit" value="New"> -->
-    <!-- </form> -->

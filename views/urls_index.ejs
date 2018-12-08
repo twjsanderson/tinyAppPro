@@ -3,21 +3,17 @@
 <head>
   <title>TinyApp</title>
 </head>
-
 <header>
   <% include partials/_header %>
 </header>
-
 <body>
-    <br>
-    <% for (let title in urlsForUser) {%>
+  <br>
+  <% for (let title in urlsForUser) {%>
     <li><%= title %> - <%= urlsForUser[title].longurl %></li><br>
-
     <a href="/urls/<%= title %>">Edit</a>
     <form method="POST" action="/urls/<%= title %>/delete"><button>Delete</button></form>
     <br>
-    <% } %>
-
+  <% } %>
 </body>
 </html>
 

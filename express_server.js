@@ -11,8 +11,7 @@ app.use(cookieSession({
   name: 'session',
   keys: ['super secure'],
   maxAge: 24 * 60 * 60 * 1000 // 24 hours
-}))
-
+}));
 
 // The GET routes are telling express to listen for requests to a certain path and run code or get stuff when it sees one.
 // The POST routes are meant to submit data to a specific resource
@@ -165,14 +164,14 @@ app.post("/register", (req, res) => {
   if (!email || !password) {
     res.statusCode = 400;
     res.send("You did not enter an email or password!")
-  }
+  };
 
   for (let userid in users) {
     if (users[userid].email === email) {
       res.statuScode = 400;
       return res.send("That email already exists!")
     }
-  }
+  };
 
   users[id] = {
     id: id,
@@ -236,10 +235,10 @@ app.listen(PORT, () => {
 function generateRandomString() {
   let ranNum = "";
   let possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-  for (var i = 0; i < 7; i++)
+  for (var i = 0; i < 7; i++) {
     ranNum += possible.charAt(Math.floor(Math.random() * possible.length));
-
-  return ranNum;
+    return ranNum;
+  }
 };
 
 function userUrls(id){
@@ -250,7 +249,7 @@ function userUrls(id){
       }
     }
   return obj;
-}
+};
 
 function userID(input){
   let ID = "";
@@ -260,4 +259,4 @@ function userID(input){
       }
     }
   return ID;
-}
+};
