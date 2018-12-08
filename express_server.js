@@ -206,7 +206,6 @@ app.get("/urls/:id", (req, res) => {
   }
 });
 
-// working
 // if user_id in urlDatabase delete entry else redirect to /urls
 app.post("/urls/:id/delete", (req, res) => {
   let id = req.session.user_id
@@ -214,7 +213,7 @@ app.post("/urls/:id/delete", (req, res) => {
     delete urlDatabase[req.params.id]
     res.redirect("/urls");
   } else {
-    res.status(303).send("Not the right user account!")
+    res.status(303).send("You don't have permission!")
   }
 });
 
