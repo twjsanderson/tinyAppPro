@@ -91,7 +91,7 @@ app.post("/login", (req, res) => {
     return res.send("That email doesn't exist!")
   });
 
-// if user logged in redirect to /urls if not redirect to .login
+// if user logged in redirect to /urls if not redirect to /login
 app.get("/", (req, res) => {
   let user_id = req.session.user_id
   if (user_id === userID(user_id)) {
@@ -106,7 +106,7 @@ app.get("/urls.json", (req, res) => {
   res.json(urlDatabase);
 });
 
-//if user is undefined or not present redirect to login
+//if user is undefined or not present, redirect to login
 app.get("/urls/new", (req, res) => {
   let user_id = req.session.user_id
   if (user_id === undefined || !user_id) {
@@ -116,12 +116,15 @@ app.get("/urls/new", (req, res) => {
   }
 });
 
+// take user id from cookies = userId, plug in userId to function userUrls = variable urlsForUser
+// render urls_index with the newly created object
 app.get("/urls", (req, res) => {
    let userId = req.session.user_id
    let urlsForUser = userUrls(userId)
    res.render("urls_index", {urlsForUser: urlsForUser, user : users[userId]});
 });
 
+// does the work to add newly created user to the users database and redirect to /urls
 app.post("/urls", (req, res) => {
   let newShort = generateRandomString();
   let userId = req.session.user_id
@@ -129,25 +132,31 @@ app.post("/urls", (req, res) => {
   urlDatabase[newShort].shorturl = newShort;
   urlDatabase[newShort].userId = userId
   urlDatabase[newShort].longurl = req.body.longURL
-  console.log(urlDatabase);
   res.redirect("/urls");
 });
 
+// if user is logged in they will be able to edit a long url
+// if they are not logged in it will redirect them to the login page
 app.post("/urls/:id", (req, res)=> {
-  const id = req.params.id
-  const longURL = req.body.longURL;
-  if (urlDatabase[id] === undefined) {
-    urlDatabase[id].longurl = longURL;
+  let userId = req.session.user_id
+  let short = req.params.id
+  let longURL = req.body.longURL;
+  if (urlDatabase[short].userId === userId) {
+    urlDatabase[short].longurl = longURL;
     res.redirect("/urls");
   } else {
     res.redirect("/login")
   }
 });
 
+//register button send you to register page
 app.get("/register", (req, res) => {
   res.render("urls_register");
 });
 
+// register page will generate a random id, take a valid email & password
+// it will updtae the users database by putting a new object into the db
+// if no email or password error messages
 app.post("/register", (req, res) => {
   const id = generateRandomString()
   const email = req.body.email
@@ -184,7 +193,8 @@ app.get("/hello", (req, res) => {
   res.send("<html><body>Hello <b>World</b></body></html>\n");
 });
 
-
+// if user_id is undefined, no user_id or user_id is not in urlDatabase redirect to /urls
+// if user_id is in urlDatabase  redirect to urls_show
 app.get("/urls/:id", (req, res) => {
   let user_id = req.session.user_id;
   if (user_id === undefined || !user_id || user_id !== urlDatabase[req.params.id].userId) {
@@ -234,8 +244,8 @@ function userUrls(id){
 
 function userID(input){
   let ID = "";
-    for (let key in users){
-      if (input === users[key].id) {
+    for (let key in urlDatabase){
+      if (input === urlDatabase[key].shorturl) {
         ID = input;
       }
     }
