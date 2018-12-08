@@ -64,7 +64,7 @@ var users = {
 app.use(bodyParser.urlencoded({extended: true}));
 
 // this get route listens for the user id info to put into cookies
-// renders the login page and passes it user id
+// passes it user id and renders the login page
 app.get("/login", (req, res) => {
   let user_id = req.session.user_id
   res.render("urls_login", {user : users[user_id]})
@@ -72,6 +72,7 @@ app.get("/login", (req, res) => {
 
 //requests email address and password from the user
 // runs a loop  to confirm that given email and pass are in the users DB
+// if email and pass are found redirect to urls else send error messages
 app.post("/login", (req, res) => {
   const email = req.body.email
   const password = req.body.password
@@ -90,10 +91,13 @@ app.post("/login", (req, res) => {
     return res.send("That email doesn't exist!")
   });
 
-// home page showing HELLO
+// if user logged in redirect to /urls if not redirect to .login
 app.get("/", (req, res) => {
-  if (userloggedin) {
+  let user_id = req.session.user_id
+  if (user_id === userID(user_id)) {
     res.redirect("/urls")
+  } else if (user_id === undefined || !user_id) {
+    res.redirect("/login")
   }
 });
 
@@ -102,7 +106,7 @@ app.get("/urls.json", (req, res) => {
   res.json(urlDatabase);
 });
 
-//presents the user with with the form to change/edit the a long url, listens for long url submt
+//if user is undefined or not present redirect to login
 app.get("/urls/new", (req, res) => {
   let user_id = req.session.user_id
   if (user_id === undefined || !user_id) {
@@ -175,13 +179,15 @@ app.post("/logout", (req, res) => {
   res.redirect("/urls")
 });
 
+//says hello world to the user
 app.get("/hello", (req, res) => {
   res.send("<html><body>Hello <b>World</b></body></html>\n");
 });
 
+
 app.get("/urls/:id", (req, res) => {
   let user_id = req.session.user_id;
-  if (user_id === undefined || !user_id) {
+  if (user_id === undefined || !user_id || user_id !== urlDatabase[req.params.id].userId) {
     res.redirect(301, "/urls");
   } else if (user_id === urlDatabase[req.params.id].userId) {
     res.render("urls_show", {shortURL: req.params.id, url: urlDatabase[req.params.id].longurl, user : users[user_id]})
@@ -224,4 +230,14 @@ function userUrls(id){
       }
     }
   return obj;
+}
+
+function userID(input){
+  let ID = "";
+    for (let key in users){
+      if (input === users[key].id) {
+        ID = input;
+      }
+    }
+  return ID;
 }
