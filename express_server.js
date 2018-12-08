@@ -115,13 +115,17 @@ app.get("/urls/new", (req, res) => {
 app.get("/urls", (req, res) => {
    let userId = req.session.user_id
    let urlsForUser = userUrls(userId)
+
    res.render("urls_index", {urlsForUser: urlsForUser, user : users[userId]});
 });
 
 app.post("/urls", (req, res) => {
   let newShort = generateRandomString();
-  let user_id = req.params.id
+  let userId = req.session.user_id
   urlDatabase[newShort] = {};
+  urlDatabase[newShort].longurl = req.body.longURL
+  urlDatabase[newShort].newshort = newShort;
+  urlDatabase[newShort].id = userId
   urlDatabase[newShort].longurl = req.body.longURL
   res.redirect("/urls");
 });
@@ -129,11 +133,11 @@ app.post("/urls", (req, res) => {
 app.post("/urls/:id", (req, res)=> {
   const id = req.params.id
   const longURL = req.body.longURL;
-  if (id === undefined) {
-    res.redirect("/login")
-  } else {
+  if (urlDatabase[id] === undefined) {
     urlDatabase[id].longurl = longURL;
     res.redirect("/urls");
+  } else {
+    res.redirect("/login")
   }
 });
 
