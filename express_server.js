@@ -193,30 +193,41 @@ app.get("/hello", (req, res) => {
   res.send("<html><body>Hello <b>World</b></body></html>\n");
 });
 
-// if user_id is undefined, no user_id or user_id is not in urlDatabase redirect to /urls
-// if user_id is in urlDatabase  redirect to urls_show
+// if user_id is undefined, no user_id or user_id is not in urlDatabase redirect to error messages
+// if user_id is in urlDatabase redirect to urls_show
 app.get("/urls/:id", (req, res) => {
   let user_id = req.session.user_id;
-  if (user_id === undefined || !user_id || user_id !== urlDatabase[req.params.id].userId) {
-    res.redirect(301, "/urls");
-  } else if (user_id === urlDatabase[req.params.id].userId) {
+  if (user_id === urlDatabase[req.params.id].userId) {
     res.render("urls_show", {shortURL: req.params.id, url: urlDatabase[req.params.id].longurl, user : users[user_id]})
+  } else if (user_id === undefined || !user_id) {
+    res.status(303).send("No user present!")
+  } else {
+    res.status(303).send("Not the right user account!")
   }
 });
 
+// working
+// if user_id in urlDatabase delete entry else redirect to /urls
 app.post("/urls/:id/delete", (req, res) => {
-  const id = req.session.user_id
+  let id = req.session.user_id
   if (id === urlDatabase[req.params.id].userId) {
     delete urlDatabase[req.params.id]
     res.redirect("/urls");
   } else {
-    res.redirect(303, "/urls");
+    res.status(303).send("Not the right user account!")
   }
 });
 
+//working
+//redirects to the webpage of short url, anyone can use this
 app.get("/u/:shortURL", (req, res) => {
   let short = req.params.shortURL;
-  res.redirect(urlDatabase[short].longurl);
+  console.log(urlDatabase[short].shorturl);
+  if (short === urlDatabase[short].shorturl) {
+    res.redirect(urlDatabase[short].longurl);
+  } else if (short !== urlDatabase[short].shorturl) {
+    res.status(303).send("URL does not exist!")
+  }
 });
 
 app.listen(PORT, () => {
