@@ -115,7 +115,6 @@ app.get("/urls/new", (req, res) => {
 app.get("/urls", (req, res) => {
    let userId = req.session.user_id
    let urlsForUser = userUrls(userId)
-
    res.render("urls_index", {urlsForUser: urlsForUser, user : users[userId]});
 });
 
@@ -123,10 +122,10 @@ app.post("/urls", (req, res) => {
   let newShort = generateRandomString();
   let userId = req.session.user_id
   urlDatabase[newShort] = {};
+  urlDatabase[newShort].shorturl = newShort;
+  urlDatabase[newShort].userId = userId
   urlDatabase[newShort].longurl = req.body.longURL
-  urlDatabase[newShort].newshort = newShort;
-  urlDatabase[newShort].id = userId
-  urlDatabase[newShort].longurl = req.body.longURL
+  console.log(urlDatabase);
   res.redirect("/urls");
 });
 
@@ -167,11 +166,10 @@ app.post("/register", (req, res) => {
     email: req.body.email,
     password: bcrypt.hashSync(req.body.password, 10)
   }
-
-  // let user_id = res.session.user_id
   res.redirect(303, "/urls")
 });
 
+//clears all cookies, redirects to /urls
 app.post("/logout", (req, res) => {
   req.session = null;
   res.redirect("/urls")
@@ -182,11 +180,11 @@ app.get("/hello", (req, res) => {
 });
 
 app.get("/urls/:id", (req, res) => {
-    let user_id = req.session.user_id;
-  if (user_id === urlDatabase[req.params.id].userId) {
-      res.render("urls_show", {shortURL: req.params.id, url: urlDatabase[req.params.id].longurl, user : users[user_id]})
-  } else {
+  let user_id = req.session.user_id;
+  if (user_id === undefined || !user_id) {
     res.redirect(301, "/urls");
+  } else if (user_id === urlDatabase[req.params.id].userId) {
+    res.render("urls_show", {shortURL: req.params.id, url: urlDatabase[req.params.id].longurl, user : users[user_id]})
   }
 });
 
