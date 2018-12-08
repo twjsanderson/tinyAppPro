@@ -1,13 +1,17 @@
 const express = require("express");
 const app = express();
 const bodyParser = require("body-parser");
-const cookieParser = require('cookie-parser')
+const cookieSession = require('cookie-session')
 const bcrypt = require('bcrypt');
 var PORT = 8080;
 
 // This declares EJS and tells Express to use EJS as its templating engine
 app.set("view engine", "ejs");
-app.use(cookieParser());
+app.use(cookieSession({
+  name: 'session',
+  keys: ['super secure'],
+  maxAge: 24 * 60 * 60 * 1000 // 24 hours
+}))
 
 
 // The GET routes are telling express to listen for requests to a certain path and run code or get stuff when it sees one.
@@ -38,22 +42,22 @@ var users = {
   "userRandomID": {
     id: "userRandomID",
     email: "user@example.com",
-    password: bcrypt.hashSync('simple', 10);
+    password: bcrypt.hashSync('simple', 10)
   },
  "user2RandomID": {
     id: "user2RandomID",
     email: "user2@example.com",
-    password: bcrypt.hashSync('easy', 10);
+    password: bcrypt.hashSync('easy', 10)
   },
   "user3RandomID": {
     id: "user3RandomID",
     email: "tom@example.com",
-    password: bcrypt.hashSync('kpop', 10);
+    password: bcrypt.hashSync('kpop', 10)
   },
   "twjsanderson": {
     id: "twjsanderson",
     email: "twjsanderson@yahoo.ca",
-    password: bcrypt.hashSync('1234', 10);
+    password: bcrypt.hashSync('1234', 10)
   }
 }
 
@@ -62,7 +66,7 @@ app.use(bodyParser.urlencoded({extended: true}));
 // this get route listens for the user id info to put into cookies
 // renders the login page and passes it user id
 app.get("/login", (req, res) => {
-  let user_id = req.cookies.user_id
+  let user_id = req.session.user_id
   res.render("urls_login", {user : users[user_id]})
 });
 
@@ -73,8 +77,8 @@ app.post("/login", (req, res) => {
   const password = req.body.password
   for (let Id in users) {
     if (users[Id].email === email) {
-      if (users[Id].password === password) {
-          res.cookie("user_id", Id)
+      if (bcrypt.compareSync(password, users[Id].password)) {
+          req.session.user_id = Id;
           res.redirect("/urls")
         } else {
           res.statuScode = 403;
@@ -100,7 +104,7 @@ app.get("/urls.json", (req, res) => {
 
 //presents the user with with the form to change/edit the a long url, listens for long url submt
 app.get("/urls/new", (req, res) => {
-  let user_id = req.cookies.user_id
+  let user_id = req.session.user_id
   if (user_id === undefined || !user_id) {
     res.redirect("urls_login");
   } else {
@@ -109,7 +113,7 @@ app.get("/urls/new", (req, res) => {
 });
 
 app.get("/urls", (req, res) => {
-   let userId = req.cookies.user_id
+   let userId = req.session.user_id
    let urlsForUser = userUrls(userId)
    res.render("urls_index", {urlsForUser: urlsForUser, user : users[userId]});
 });
@@ -160,12 +164,12 @@ app.post("/register", (req, res) => {
     password: bcrypt.hashSync(req.body.password, 10)
   }
 
-  res.cookie("user_id", id )
+  // let user_id = res.session.user_id
   res.redirect(303, "/urls")
 });
 
 app.post("/logout", (req, res) => {
-  res.clearCookie("user_id")
+  req.session = null;
   res.redirect("/urls")
 });
 
@@ -174,8 +178,7 @@ app.get("/hello", (req, res) => {
 });
 
 app.get("/urls/:id", (req, res) => {
-    let user_id = req.cookies.user_id;
-    console.log(user_id);
+    let user_id = req.session.user_id;
   if (user_id === urlDatabase[req.params.id].userId) {
       res.render("urls_show", {shortURL: req.params.id, url: urlDatabase[req.params.id].longurl, user : users[user_id]})
   } else {
@@ -184,7 +187,7 @@ app.get("/urls/:id", (req, res) => {
 });
 
 app.post("/urls/:id/delete", (req, res) => {
-  const id = req.cookies.user_id
+  const id = req.session.user_id
   if (id === urlDatabase[req.params.id].userId) {
     delete urlDatabase[req.params.id]
     res.redirect("/urls");
@@ -194,12 +197,12 @@ app.post("/urls/:id/delete", (req, res) => {
 });
 
 app.get("/u/:shortURL", (req, res) => {
-  let longURL = req.params.shortURL
-  res.redirect(urlDatabase[longURL]);
+  let short = req.params.shortURL;
+  res.redirect(urlDatabase[short].longurl);
 });
 
 app.listen(PORT, () => {
-  console.log(`Example app listening on port ${PORT}!`);
+  console.log(`TinyApp listening on port ${PORT}!`);
 });
 
 function generateRandomString() {
